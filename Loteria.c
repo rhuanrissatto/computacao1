@@ -79,7 +79,6 @@ int main()
                 printf("Você quer tentar novamente? (s/n)\n");
                 scanf(" %c", &resposta);
             }
-            printf("%c", &resposta);
             if(resposta == 's'){
                 numTentativas = 0;
                 acerto1 = 0;
@@ -95,7 +94,7 @@ int main()
                 while(valor2 == valor3 || valor2 == valor1){
                     valor2 = rand() % 20 + 1;
                 }
-                printf("v1: %d \nv2: %d \nv3: %d\n", valor1, valor2, valor3);
+                //printf("v1: %d \nv2: %d \nv3: %d\n", valor1, valor2, valor3);
                 continue;
             }else{
                 printf("Você gastou um total de %d R$", dinheiroGasto);
