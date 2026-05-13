@@ -22,7 +22,7 @@ int main()
     }
 
     
-    printf("v1: %d \nv2: %d \nv3: %d\n", valor1, valor2, valor3);
+    //printf("v1: %d \nv2: %d \nv3: %d\n", valor1, valor2, valor3);
     //Acertos
     int acerto1 = 0;
     int acerto2 = 0;
@@ -30,7 +30,7 @@ int main()
     
     int dinheiroGasto = 0;
     
-    int numTentativas = 60;
+    int numTentativas = 0;
     
     while(1){
         numTentativas += 1;
