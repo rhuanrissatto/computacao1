@@ -1,123 +1,216 @@
 #include <stdio.h>
-#include <locale.h>
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
 
-int used[36][2];
-int lista_used = 0;
-int coord_X[36][2];
-int lista_X = 0;
-int coord_O[36][2];
-int lista_O = 0;
-int coord_W[36][2];
-int lista_W = 0;
-int coord_B[36][2];
-int lista_B = 0;
+#define TAM 6
 
-int jogo = 1;
+char tabuleiro[TAM][TAM];
 
-int ponto(int X, int Y, char simbolo){
-    for(int i = 0; i < 36; i++){
-        for(int j = 0; j < 36; j++){
-            if(used[i][0] == X && used[i][1] == Y){
-                return 1;
-            }
+void inicializar() {
+    for(int i=0;i<TAM;i++) {
+        for(int j=0;j<TAM;j++) {
+            tabuleiro[i][j] = '.';
         }
     }
-    if(simbolo == 'X'){
-        coord_X[lista_X][0] = X;
-        coord_X[lista_X][1] = Y;
-        lista_X++;
-    }else if(simbolo == 'O'){
-        coord_O[lista_O][0] = X;
-        coord_O[lista_O][1] = Y;
-        lista_O++;
-    }else if(simbolo == 'W'){
-        coord_W[lista_W][0] = X;
-        coord_W[lista_W][1] = Y;
-        lista_W++;
-    }else if(simbolo == '-'){
-        coord_B[lista_B][0] = X;
-        coord_B[lista_B][1] = Y;
-        lista_B++;
+}
+
+void imprimir() {
+    printf("\n");
+
+    for(int i=0;i<TAM;i++) {
+        for(int j=0;j<TAM;j++) {
+            printf("%c ", tabuleiro[i][j]);
+        }
+        printf("\n");
     }
-    used[lista_used][0] = X;
-    used[lista_used][1] = Y;
+}
+
+int valido(int x,int y) {
+    return x >= 1 && x <= TAM &&
+           y >= 1 && y <= TAM;
+}
+
+void verificar_bloqueio(int x,int y,char simbolo) {
+
+    int linha = y-1;
+    int coluna = x-1;
+
+    /* esquerda */
+
+    if(coluna >= 2 &&
+       tabuleiro[linha][coluna-2] == simbolo) {
+
+        if(tabuleiro[linha][coluna-1] == '.')
+            tabuleiro[linha][coluna-1] = '-';
+        else
+            tabuleiro[linha][coluna-1] = simbolo;
+    }
+
+    /* direita */
+
+    if(coluna <= TAM-3 &&
+       tabuleiro[linha][coluna+2] == simbolo) {
+
+        if(tabuleiro[linha][coluna+1] == '.')
+            tabuleiro[linha][coluna+1] = '-';
+        else
+            tabuleiro[linha][coluna+1] = simbolo;
+    }
+
+    /* cima */
+
+    if(linha >= 2 &&
+       tabuleiro[linha-2][coluna] == simbolo) {
+
+        if(tabuleiro[linha-1][coluna] == '.')
+            tabuleiro[linha-1][coluna] = '-';
+        else
+            tabuleiro[linha-1][coluna] = simbolo;
+    }
+
+    /* baixo */
+
+    if(linha <= TAM-3 &&
+       tabuleiro[linha+2][coluna] == simbolo) {
+
+        if(tabuleiro[linha+1][coluna] == '.')
+            tabuleiro[linha+1][coluna] = '-';
+        else
+            tabuleiro[linha+1][coluna] = simbolo;
+    }
+}
+
+int jogar(int x,int y,char simbolo) {
+
+    if(!valido(x,y))
+        return 1;
+
+    int linha = y-1;
+    int coluna = x-1;
+
+    if(tabuleiro[linha][coluna] != '.')
+        return 1;
+
+    tabuleiro[linha][coluna] = simbolo;
+
+    verificar_bloqueio(x,y,simbolo);
+
     return 0;
 }
 
-int preencher_tab(int dimensao,int coord_X[][2],int coord_O[][2],int coord_W[][2]){
-    
-    for(int i = 1; i<dimensao+1; i++){
-        printf("\n");
-        for(int j=1; j<dimensao+1; j++){
-            int cXe = 0;
-            int cOe = 0;
-            int cWe = 0;
-            int cBe = 0;
-            
-            for(int k = 0; k<36; k++){
-                if(i == coord_X[k][0] && j == coord_X[k][1]){
-                    cXe = 1;
-                }
-                if(i == coord_O[k][0] && j == coord_O[k][1]){
-                    cOe = 1;
-                }
-                if(i == coord_W[k][0] && j == coord_W[k][1]){
-                    cWe = 1;
-                }
-                if(i == coord_B[k][0] && j == coord_B[k][1]){
-                    cBe = 1;
-                }
-            }
-            
-            if(cXe == 1){
-                printf("X ");
-            }else if(cOe == 1){
-                printf("O ");
-            }else if(cWe == 1){
-                printf("W ");
-            }else if(cBe == 1){
-                printf("- ");
-            }else{
-                printf("° ");
-            }
-            }
-        }
-        printf("\n");
-        return 0;
-    }
- 
+void computador() {
 
-int main()
-{
-    setlocale(LC_ALL, "Portuguese");
-    //ponto(1,2,'X');
-    //ponto(5,6, 'O');
-    //ponto(3,1,'W');
-    //ponto(4,4,'-');
-    preencher_tab(6, coord_X, coord_O, coord_W);
-    while(jogo){
-        int x, y;
-        printf("\nJogador 1: Digite as coordenadas da sua jogada (X, Y)");
-        scanf("%d %d", &x, &y);
-        while(ponto(x, y, 'X') == 1){
-            printf("\nEssas coordenadas estão ocupadas! Redija as coordenadas da sua jogada (X, Y)");
-            scanf("%d %d", &x, &y);
-        }
-        preencher_tab(6, coord_X, coord_O, coord_W);
-        printf("\nJogador 2: Digite as coordenadas da sua jogada (X, Y)");
-        scanf("%d %d", &x, &y);
-        ponto(x, y, 'O');
-        preencher_tab(6, coord_X, coord_O, coord_W);
-        x = rand() % 6 + 1;
-        y = rand() % 6 + 1;
-        //printf("%d %d", x, y);
-        ponto(x, y, 'W');
-        preencher_tab(6, coord_X, coord_O, coord_W);
+    int x,y;
+
+    do {
+        x = rand()%6 + 1;
+        y = rand()%6 + 1;
     }
-    
-    return 0;
+    while(jogar(x,y,'W'));
 }
 
+void contar_pontos(int *X,int *O,int *W,int *B) {
+
+    *X = *O = *W = *B = 0;
+
+    for(int i=0;i<TAM;i++) {
+        for(int j=0;j<TAM;j++) {
+
+            switch(tabuleiro[i][j]) {
+
+                case 'X':
+                    (*X)++;
+                    break;
+
+                case 'O':
+                    (*O)++;
+                    break;
+
+                case 'W':
+                    (*W)++;
+                    break;
+
+                case '-':
+                    (*B)++;
+                    break;
+            }
+        }
+    }
+}
+
+int cheio() {
+
+    for(int i=0;i<TAM;i++) {
+        for(int j=0;j<TAM;j++) {
+
+            if(tabuleiro[i][j] == '.')
+                return 0;
+        }
+    }
+
+    return 1;
+}
+
+int main() {
+
+    setlocale(LC_ALL,"Portuguese");
+    srand(time(NULL));
+
+    inicializar();
+
+    while(!cheio()) {
+
+        int x,y;
+
+        imprimir();
+
+        printf("\nJogador 1 (X): ");
+        scanf("%d %d",&x,&y);
+
+        while(jogar(x,y,'X')) {
+            printf("Posição inválida!\n");
+            scanf("%d %d",&x,&y);
+        }
+
+        if(cheio()) break;
+
+        imprimir();
+
+        printf("\nJogador 2 (O): ");
+        scanf("%d %d",&x,&y);
+
+        while(jogar(x,y,'O')) {
+            printf("Posição inválida!\n");
+            scanf("%d %d",&x,&y);
+        }
+
+        if(cheio()) break;
+
+        computador();
+    }
+
+    imprimir();
+
+    int X,O,W,B;
+
+    contar_pontos(&X,&O,&W,&B);
+
+    printf("\n\nResultado Final\n");
+
+    printf("Jogador 1 (X): %d\n",X);
+    printf("Jogador 2 (O): %d\n",O);
+    printf("Computador (W): %d\n",W);
+    printf("Bloqueios (-): %d\n",B);
+
+    if(X > O && X > W)
+        printf("\nJogador 1 venceu!\n");
+    else if(O > X && O > W)
+        printf("\nJogador 2 venceu!\n");
+    else if(W > X && W > O)
+        printf("\nComputador venceu!\n");
+    else
+        printf("\nEmpate!\n");
+
+    return 0;
+}
